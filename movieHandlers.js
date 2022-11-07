@@ -1,8 +1,35 @@
 const database = require("./database");
 
 const getMovies = (req, res) => {
+    let initialSql = "select * from movies";
+    const sqlValues = [];
+
+    if (req.query.color != null) {
+        sqlValues.push({
+            column: "color",
+            value: req.query.color,
+            operator: "=",
+        });
+    }
+    if (req.query.max_duration != null) {
+        sqlValues.push({
+            column: "duration",
+            value: req.query.max_duration,
+            operator: "<=",
+        });
+    }
+
     database
-        .query("select * from movies")
+        .query(
+            sqlValues.reduce(
+                (sql, { column, operator }, index) =>
+                    `${sql} ${
+                        index === 0 ? "where" : "and"
+                    } ${column} ${operator} ?`,
+                initialSql
+            ),
+            sqlValues.map(({ value }) => value)
+        )
         .then(([movies]) => {
             res.json(movies);
         })
@@ -30,10 +57,37 @@ const getMovieById = (req, res) => {
 };
 
 const getUsers = (req, res) => {
+    let initialSql = "select * from users";
+    const sqlValues = [];
+
+    if (req.query.language != null) {
+        sqlValues.push({
+            column: "language",
+            value: req.query.language,
+            operator: "=",
+        });
+    }
+    if (req.query.city != null) {
+        sqlValues.push({
+            column: "city",
+            value: req.query.city,
+            operator: "=",
+        });
+    }
+
     database
-        .query("select * from users")
-        .then(([users]) => {
-            res.json(users);
+        .query(
+            sqlValues.reduce(
+                (sql, { column, operator }, index) =>
+                    `${sql} ${
+                        index === 0 ? "where" : "and"
+                    } ${column} ${operator} ?`,
+                initialSql
+            ),
+            sqlValues.map(({ value }) => value)
+        )
+        .then(([movies]) => {
+            res.json(movies);
         })
         .catch((err) => {
             console.error(err);
