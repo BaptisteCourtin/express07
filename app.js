@@ -10,6 +10,12 @@ const welcome = (req, res) => {
     res.send("Welcome to my favourite movie list");
 };
 
+// ---
+
+const { validateMovie, validateUser } = require("./validators.js");
+
+// ---
+
 app.get("/", welcome);
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
@@ -18,13 +24,13 @@ app.get("/api/users/:id", movieHandlers.getUser);
 
 // ---
 
-app.post("/api/movies", movieHandlers.postMovie);
-app.post("/api/users", movieHandlers.postUser);
+app.post("/api/movies", validateMovie, movieHandlers.postMovie);
+app.post("/api/users", validateUser, movieHandlers.postUser);
 
 // ---
 
-app.put("/api/movies/:id", movieHandlers.updateMovie);
-app.put("/api/users/:id", movieHandlers.updateUser);
+app.put("/api/movies/:id", validateMovie, movieHandlers.updateMovie);
+app.put("/api/users/:id", validateUser, movieHandlers.updateUser);
 
 // ---
 
